@@ -1,5 +1,7 @@
 # cotu
 
+Poop
+
 `cotu`, an abbreviation for *Center of the Universe* is an experimental CLI tool to connect all the services a person can use daily.
 
 ## Installation
