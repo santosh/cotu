@@ -1,11 +1,17 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_ID = credentials('DOCKER_ID')
+        DOCKER_PASSWORD = credentials('DOCKER_PASSWORD')
+    }
+
     stages {
         stage('Init') {
             steps {
                 echo 'Initializing..'
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+                echo "Docker ID: ${env.DOCKER_ID}, Docker Password: ${env.DOCKER_PASSWORD}"
             }
         }
         stage('Test') {
@@ -16,8 +22,8 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo 'Building..'
-                echo 'Running docker build -t sntshk/cotu .'
+                echo 'Running docker build -t sntshk/cotu:latest .'
+                sh 'docker build -t sntshk/cotu:latest .'
             }
         }
         stage('Publish') {
@@ -28,8 +34,8 @@ pipeline {
         }
         stage('Cleanup') {
             steps {
-                echo 'Cleaning..'
-                echo 'Running docker rmi..'
+                echo 'docker rmi $(docker images -q)'
+                sh 'docker rmi $(docker images -q)'
             }
         }
     }
