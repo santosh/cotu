@@ -11,13 +11,14 @@ pipeline {
             steps {
                 echo 'Initializing..'
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
-                echo "Docker ID: ${env.DOCKER_ID}, Docker Password: ${env.DOCKER_PASSWORD}"
+                echo "Current branch: ${env.BRANCH_NAME}"
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing..'
-                echo 'Running pytest..'
+                sh 'python3 -m pip install pytest'
+                sh 'pytest'
             }
         }
         stage('Build') {
@@ -36,6 +37,8 @@ pipeline {
             steps {
                 echo 'docker rmi $(docker images -q)'
                 sh 'docker rmi $(docker images -q)'
+                sh 'rm -rf __pycache__'
+                sh 'rm -rf .pytest_cache'
             }
         }
     }
