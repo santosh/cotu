@@ -14,17 +14,16 @@ pipeline {
                 echo "Current branch: ${env.BRANCH_NAME}"
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-                sh 'python3 -m pip install pytest'
-                sh 'pytest'
-            }
-        }
         stage('Build') {
             steps {
                 echo 'Running docker build -t sntshk/cotu:latest .'
                 sh 'docker build -t sntshk/cotu:latest .'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                sh 'docker run --rm sntshk/cotu pytest'
             }
         }
         stage('Publish') {
