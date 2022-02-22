@@ -12,6 +12,7 @@ pipeline {
                 echo 'Initializing..'
                 echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
                 echo "Current branch: ${env.BRANCH_NAME}"
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_ID --password-stdin'
             }
         }
         stage('Build') {
@@ -23,13 +24,13 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing..'
-                sh 'docker run --rm sntshk/cotu pytest'
+                sh 'docker run --rm -e CI=true sntshk/cotu pytest'
             }
         }
         stage('Publish') {
             steps {
-                echo 'Publishing..'
-                echo 'Running docker push..'
+                echo 'Publishing image to DockerHub..'
+                sh 'docker push sntshk/cotu:latest'
             }
         }
         stage('Cleanup') {
