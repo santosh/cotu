@@ -17,26 +17,28 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo 'Running docker build -t sntshk/cotu:latest .'
-                sh 'docker build -t sntshk/cotu:latest .'
+                echo 'Building image..'
+                sh 'docker build -t $DOCKER_ID/cotu:latest .'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing..'
-                sh 'docker run --rm -e CI=true sntshk/cotu pytest'
+                sh 'docker run --rm -e CI=true $DOCKER_ID/cotu pytest'
             }
         }
         stage('Publish') {
             steps {
                 echo 'Publishing image to DockerHub..'
-                sh 'docker push sntshk/cotu:latest'
+                sh 'docker push $DOCKER_ID/cotu:latest'
             }
         }
         stage('Cleanup') {
             steps {
-                echo 'docker rmi $(docker images -q)'
-                sh 'docker rmi $(docker images -q)'
+                echo 'Removing unused docker containers and images..'
+                sh 'docker ps -aq | xargs --no-run-if-empty docker rm'
+                // keep intermediate images as cache, only delete the final image
+                sh 'docker images -q | xargs --no-run-if-empty docker rmi'
             }
         }
     }
