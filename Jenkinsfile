@@ -18,7 +18,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building image..'
-                sh 'docker build -t $DOCKER_ID/cotu:latest .'
+                sh 'docker buildx build -t $DOCKER_ID/cotu:latest .'
             }
         }
         stage('Test') {
@@ -29,16 +29,15 @@ pipeline {
         }
         stage('Publish') {
             steps {
-                echo 'Publishing image to DockerHub..'
-                sh 'docker push $DOCKER_ID/cotu:latest'
+                echo 'Building and publishing multi-arch image to DockerHub..'
+                sh 'docker buildx build --push --platform linux/amd64,linux/arm64 -t $DOCKER_ID/cotu:latest .'
             }
         }
         stage('Cleanup') {
             steps {
                 echo 'Removing unused docker containers and images..'
-                sh 'docker ps -aq | xargs --no-run-if-empty docker rm'
                 // keep intermediate images as cache, only delete the final image
-                sh 'docker images -q | xargs --no-run-if-empty docker rmi'
+                sh 'docker images -q $DOCKER_ID/cotu | xargs --no-run-if-empty docker rmi'
             }
         }
     }
