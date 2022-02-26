@@ -37,8 +37,6 @@ pipeline {
             steps {
                 echo 'docker rmi $(docker images -q)'
                 sh 'docker rmi $(docker images -q)'
-                sh 'rm -rf __pycache__'
-                sh 'rm -rf .pytest_cache'
             }
         }
     }
