@@ -1,13 +1,8 @@
-FROM --platform=$TARGETPLATFORM python:3.8-alpine
+# FROM --platform=$TARGETPLATFORM golang:alpine
+FROM alpine
 
 MAINTAINER sntshkmr60@gmail.com
 
-WORKDIR /app
+COPY dist/cotu /usr/bin/cotu
 
-COPY requirements.txt requirements.txt
-
-RUN pip3 install -r requirements.txt
-
-COPY . .
-
-CMD [ "python3", "cotu.py"]
+ENTRYPOINT [ "cotu" ]
