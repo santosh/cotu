@@ -1,5 +1,4 @@
-# FROM --platform=$TARGETPLATFORM golang:alpine
-FROM alpine
+FROM --platform=$TARGETPLATFORM golang:alpine
 
 MAINTAINER sntshkmr60@gmail.com
 

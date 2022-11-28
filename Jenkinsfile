@@ -14,25 +14,26 @@ pipeline {
                 sh 'echo $DOCKER_PASSWORD | docker login -u sntshk --password-stdin'
             }
         }
-        stage('Build') {
-            steps {
-                echo 'Building image..'
-                // sh 'docker buildx build -t sntshk/cotu:latest .'
-                sh 'go build -o dist/cotu'
-                sh 'docker build -t sntshk/cotu:golang .'
-            }
-        }
         stage('Test') {
             steps {
                 echo 'Testing..'
                 // sh 'docker run --rm -e CI=true sntshk/cotu pytest'
             }
         }
-        stage('Publish') {
+        stage('Build, Publish & Cleanup: arm64') {
             steps {
-                echo 'Building and publishing multi-arch image to DockerHub..'
-                // sh 'docker buildx build --push --platform linux/amd64,linux/arm64 -t sntshk/cotu:latest .'
-                sh 'docker push sntshk/cotu:golang'
+                echo 'Building and publishing arm64 image to DockerHub..'
+                sh 'GOOS=linux GOARCH=arm64 go build -buildvcs=false -o dist/cotu'
+                sh 'docker buildx build --push --platform linux/arm64 -t sntshk/cotu:latest .'
+                sh 'rm -rf dist/'
+            }
+        }
+        stage('Build, Publish & Cleanup: amd64') {
+            steps {
+                echo 'Building and publishing amd64 image to DockerHub..'
+                sh 'GOOS=linux GOARCH=amd64 go build -buildvcs=false -o dist/cotu'
+                sh 'docker buildx build --push --platform linux/amd64 -t sntshk/cotu:latest .'
+                sh 'rm -rf dist/'
             }
         }
         stage('Cleanup') {
@@ -40,7 +41,6 @@ pipeline {
                 echo 'Removing unused docker containers and images..'
                 // keep intermediate images as cache, only delete the final image
                 sh 'docker images -q sntshk/cotu | xargs --no-run-if-empty docker rmi'
-                sh 'rm -rf dist/'
             }
         }
     }
