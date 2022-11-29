@@ -25,4 +25,7 @@ dist/
 # Go workspace file
 go.work
 
+# Ignore env file
+.env
+
 # End of https://www.toptal.com/developers/gitignore/api/go
