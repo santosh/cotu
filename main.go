@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -24,49 +23,9 @@ func main() {
 				Name:  "s3",
 				Usage: "tasks related to aws s3",
 				Subcommands: []*cli.Command{
-					{
-						Name:  "auth",
-						Usage: "authenticate with aws",
-						Action: func(cCtx *cli.Context) error {
-							fmt.Println("auth with aws in progress")
-							return nil
-						},
-					},
-					{
-						Name:    "upload",
-						Aliases: []string{"u"},
-						Usage:   "upload to a bucket",
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:  "path",
-								Value: "cotu",
-								Usage: "destination path in cotu bucket",
-							},
-						},
-						Action: func(cCtx *cli.Context) error {
-							fmt.Println("uploading to s3 in progress")
-							return nil
-						},
-					},
-					{
-						Name:    "list",
-						Aliases: []string{"l"},
-						Usage:   "list cotu bucket",
-						Flags: []cli.Flag{
-							&cli.StringFlag{
-								Name:        "path",
-								Aliases:     []string{"p"},
-								Value:       "",
-								DefaultText: "\"\"",
-								Usage:       "possible `SUBDIR` to list",
-							},
-						},
-						Action: func(cCtx *cli.Context) error {
-							path := cCtx.String("path")
-							s3.ListBucket(path)
-							return nil
-						},
-					},
+					&s3.AuthCommand,
+					&s3.UploadCommand,
+					&s3.ListCommand,
 				},
 			},
 		},

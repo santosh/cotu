@@ -7,7 +7,28 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/urfave/cli/v2"
 )
+
+var ListCommand cli.Command = cli.Command{
+	Name:    "list",
+	Aliases: []string{"l"},
+	Usage:   "list cotu bucket",
+	Flags: []cli.Flag{
+		&cli.StringFlag{
+			Name:        "path",
+			Aliases:     []string{"p"},
+			Value:       "",
+			DefaultText: "\"\"",
+			Usage:       "possible `SUBDIR` to list",
+		},
+	},
+	Action: func(cCtx *cli.Context) error {
+		path := cCtx.String("path")
+		ListBucket(path)
+		return nil
+	},
+}
 
 // ListBucket lists all the items in a bucket. A `path` can be pass to filter
 // the results to that subdirectory only.
